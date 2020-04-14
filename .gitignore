@@ -1,0 +1,7 @@
+# directories
+.theos
+packages
+
+# files
+*.code-workspace
+.DS_Store

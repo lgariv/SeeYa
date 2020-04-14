@@ -1,0 +1,9 @@
+Package: com.miwix.contactnotif
+Name: ContactNotif
+Depends: mobilesubstrate, firmware (>= 13.0)
+Version: 1.0.0
+Architecture: iphoneos-arm
+Description: An awesome MobileSubstrate tweak!
+Maintainer: Lavie Gariv
+Author: Lavie Gariv
+Section: Tweaks
