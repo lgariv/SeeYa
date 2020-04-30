@@ -1,5 +1,3 @@
-#import <CoreTelephony/CTCarrier.h>
-#import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #import "Tweak.h"
 
 NSString *contactImagePath;

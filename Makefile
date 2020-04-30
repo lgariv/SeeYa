@@ -9,7 +9,7 @@ include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = ContactNotif
 
-ContactNotif_FILES = Tweak.xm FolderFinder.m
+ContactNotif_FILES = Tweak.xm
 ContactNotif_FRAMEWORKS = UIKit
 ContactNotif_CFLAGS = -fobjc-arc
 
