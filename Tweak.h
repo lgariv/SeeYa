@@ -1,5 +1,69 @@
+#import "FolderFinder.h"
+#import "WhatsAppContactPhotoProvider.h"
+
+@class NCNotificationContent;
+
+@interface NCNotificationContent : NSObject {
+	NSArray* _icons;
+}
+@end
+
+@interface NCNotificationRequest : NSObject {
+	NCNotificationContent* _content;
+}
+-(NSString *)threadIdentifier;
+@end
+
+@implementation WhatsAppContactPhotoProvider
+  - (DDNotificationContactPhotoPromiseOffer *)contactPhotoPromiseOfferForNotification:(DDUserNotification *)notification {
+    NCNotificationRequest *request = [notification request];
+    NSString *threadId = [request threadIdentifier];
+    NSString *chatId = [threadId componentsSeparatedByString:@"@"][0];
+    NSFileManager *fileManager = [[NSFileManager alloc] init];
+    NSArray *identifiers = @[@"group.net.whatsapp.WhatsApp.shared", @"group.net.whatsapp.WhatsAppSMB.shared"];
+
+    for (NSString *identifier in identifiers) {
+      NSString *file;
+      NSString *profilePicture;
+      NSString *containerPath = [FolderFinder findSharedFolder:identifier];
+      NSString *picturesPath = [NSString stringWithFormat:@"%@/Media/Profile", containerPath];
+      NSDirectoryEnumerator *files = [fileManager enumeratorAtPath:picturesPath];
+
+      while (file = [files nextObject]) {
+        NSArray *parts = [file componentsSeparatedByString:@"-"];
+
+        // DMs
+        if ([parts count] == 2) {
+          if ([chatId isEqualToString:parts[0]]){
+            profilePicture = file;
+          }
+        }
+
+        // Groups
+        if ([parts count] == 3) {
+          if ([chatId isEqualToString:[NSString stringWithFormat:@"%@-%@", parts[0], parts[1]]]){
+            profilePicture = file;
+          }
+        }
+
+        if (profilePicture) {
+          NSString *imagePath = [NSString stringWithFormat:@"%@/%@", picturesPath, profilePicture];
+          UIImage *image = [UIImage imageWithContentsOfFile:imagePath];
+
+          return [NSClassFromString(@"DDNotificationContactPhotoPromiseOffer") offerInstantlyResolvingPromiseWithPhotoIdentifier:imagePath image:image];
+        }
+      }
+    }
+
+    return nil;
+  }
+@end
+
+//start from here
+
 #import <Contacts/Contacts.h>
 #import <UIKit/UIKit.h>
+#import <UIKit/UIBezierPath.h>
 
 @interface NCNotificationStructuredListViewController : UIViewController
 @end
@@ -23,14 +87,15 @@
 @property (nonatomic,copy) NSArray * icons;
 @property (nonatomic,copy) NSString * title;
 @property (nonatomic,copy) NSString * primaryText;
+// %new
+- (UIImage *)imageWithImage:(UIImage *)image convertToSize:(CGSize)size ;
 @end 
 
 @interface NCNotificationViewControllerView : UIView
 @property (nonatomic, readwrite) NCNotificationShortLookView *contentView;
 //@property (assign,nonatomic) PLPlatterView * contentView;              //@synthesize contentView=_contentView - In the implementation block
-@end
-
-@interface NCNotificationContent : NSObject
+-(UIImage *)getImageFrom:(NSString *)contactName;
+- (UIImage *)imageWithImage:(UIImage *)image convertToSize:(CGSize)size;
 @end
 
 /*@interface NCNotificationContent () {
@@ -43,10 +108,10 @@
 @property (nonatomic,readonly) UIImage * icon; 
 @end*/
 
-@interface NCNotificationRequest : NSObject {
+/*@interface NCNotificationRequest : NSObject {
   NCNotificationContent* _content;
 }
-@end
+@end*/
 
 /*@interface NCNotificationRequest (Private) 
 @property (nonatomic,readonly) NCNotificationContent * content;                                          //@synthesize content=_content - In the implementation block
@@ -81,7 +146,8 @@
 @end
 
 @interface NCNotificationShortLookViewController : NCNotificationViewController
-@property (nonatomic,readonly) UIView * viewForPreview; 
+@property (nonatomic,retain) NCNotificationShortLookView * viewForPreview;
+@property (nonatomic,retain) NCNotificationShortLookView *view;
 -(id)_notificationShortLookViewIfLoaded;
 @end
 
