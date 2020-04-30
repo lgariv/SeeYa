@@ -9,6 +9,12 @@ BOOL hasEmoji;
 NSString *phoneNumFromContact;
 NSString *finalPath;
 
+%hook NCNotificationViewControllerView
+-(void)didmovetosuperview {
+	%orig;
+}
+%end
+
 %hook NCNotificationListCell
 -(void)layoutSubviews {
 	%orig;

@@ -1,6 +1,7 @@
 # directories
 .theos
 packages
+.vscode
 
 # files
 *.code-workspace
