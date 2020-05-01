@@ -2,8 +2,6 @@
 #import <UIKit/UIBezierPath.h>
 #import "FolderFinder.h"
 
-@class NCNotificationContent;
-
 @interface NCNotificationContent : NSObject {
 	NSArray* _icons;
   NSString* _header;
