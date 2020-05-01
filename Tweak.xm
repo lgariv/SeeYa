@@ -50,7 +50,7 @@ dispatch_queue_t highProtityQueue() {
 							contactImage = [self imageWithImage:contactImage convertToSize:CGSizeMake(25, 25)];
 							NSArray *newIconsArray = [NSArray arrayWithObject:contactImage];
 							MSHookIvar<NSArray *>(request.content, "_icons") = newIconsArray;
-							break;
+							//break;
 						}
 					}
 				}
