@@ -22,47 +22,49 @@ static dispatch_queue_t getBBServerQueue() {
 
 %hook CSNotificationDispatcher
 - (void)postNotificationRequest:(NCNotificationRequest *)request {
-	NSString *threadId = [request threadIdentifier];
-	NSString *chatId = [threadId componentsSeparatedByString:@"@"][0];
-	NSFileManager *fileManager = [[NSFileManager alloc] init];
-	NSArray *identifiers = @[@"group.net.whatsapp.WhatsApp.shared", @"group.net.whatsapp.WhatsAppSMB.shared"];
+	if ([[request.content.header lowercaseString] isEqualToString:@"whatsapp"]) {
+		NSString *threadId = [request threadIdentifier];
+		NSString *chatId = [threadId componentsSeparatedByString:@"@"][0];
+		NSFileManager *fileManager = [[NSFileManager alloc] init];
+		NSArray *identifiers = @[@"group.net.whatsapp.WhatsApp.shared", @"group.net.whatsapp.WhatsAppSMB.shared"];
 
-	for (NSString *identifier in identifiers) {
-		NSString *file;
-		NSString *profilePicture;
-		NSString *containerPath = [FolderFinder findSharedFolder:identifier];
-		NSString *picturesPath = [NSString stringWithFormat:@"%@/Media/Profile", containerPath];
-		NSDirectoryEnumerator *files = [fileManager enumeratorAtPath:picturesPath];
+		for (NSString *identifier in identifiers) {
+			NSString *file;
+			NSString *profilePicture;
+			NSString *containerPath = [FolderFinder findSharedFolder:identifier];
+			NSString *picturesPath = [NSString stringWithFormat:@"%@/Media/Profile", containerPath];
+			NSDirectoryEnumerator *files = [fileManager enumeratorAtPath:picturesPath];
 
-		while (file = [files nextObject]) {
-			NSArray *parts = [file componentsSeparatedByString:@"-"];
+			while (file = [files nextObject]) {
+				NSArray *parts = [file componentsSeparatedByString:@"-"];
 
-			// DMs
-			if ([parts count] == 2) {
-				if ([chatId isEqualToString:parts[0]]){
-					profilePicture = file;
+				// DMs
+				if ([parts count] == 2) {
+					if ([chatId isEqualToString:parts[0]]){
+						profilePicture = file;
+					}
 				}
-			}
 
-			// Groups
-			if ([parts count] == 3) {
-				if ([chatId isEqualToString:[NSString stringWithFormat:@"%@-%@", parts[0], parts[1]]]){
-					profilePicture = file;
+				// Groups
+				if ([parts count] == 3) {
+					if ([chatId isEqualToString:[NSString stringWithFormat:@"%@-%@", parts[0], parts[1]]]){
+						profilePicture = file;
+					}
 				}
-			}
 
-			if (profilePicture) {
-				contactImagePath = [NSString stringWithFormat:@"%@/%@", picturesPath, profilePicture];
-				contactImage = [UIImage imageWithContentsOfFile:contactImagePath];
+				if (profilePicture) {
+					contactImagePath = [NSString stringWithFormat:@"%@/%@", picturesPath, profilePicture];
+					contactImage = [UIImage imageWithContentsOfFile:contactImagePath];
 
-				//here it is
-				dispatch_queue_t queue = getBBServerQueue();
-				dispatch_async(queue,^{
-					contactImage = [self imageWithImage:contactImage convertToSize:CGSizeMake(25, 25)];
-					NSArray *newIconsArray = [NSArray arrayWithObject:contactImage];
-					MSHookIvar<UIImage *>(request, "_icon") = contactImage;
-					MSHookIvar<NSArray *>(request.content, "_icons") = newIconsArray;
-				});
+					//here it is
+					dispatch_queue_t queue = getBBServerQueue();
+					dispatch_async(queue,^{
+						contactImage = [self imageWithImage:contactImage convertToSize:CGSizeMake(25, 25)];
+						NSArray *newIconsArray = [NSArray arrayWithObject:contactImage];
+						MSHookIvar<UIImage *>(request, "_icon") = contactImage;
+						MSHookIvar<NSArray *>(request.content, "_icons") = newIconsArray;
+					});
+				}
 			}
 		}
 	}
