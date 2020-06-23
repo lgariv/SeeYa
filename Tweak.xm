@@ -23,7 +23,8 @@ dispatch_queue_t highProtityQueue() {
 					NSString *profilePicture;
 					NSString *containerPath = [FolderFinder findSharedFolder:identifier];
 					NSString *picturesPath = [NSString stringWithFormat:@"%@/Media/Profile", containerPath];
-					NSDirectoryEnumerator *files = [fileManager enumeratorAtPath:picturesPath];
+					//NSDirectoryEnumerator *filesNotReversed = [fileManager enumeratorAtPath:picturesPath];
+					NSEnumerator *files = [[fileManager contentsOfDirectoryAtPath:picturesPath error:nil] reverseObjectEnumerator];
 
 					while (file = [files nextObject]) {
 						NSArray *parts = [file componentsSeparatedByString:@"-"];
@@ -50,7 +51,7 @@ dispatch_queue_t highProtityQueue() {
 							contactImage = [self imageWithImage:contactImage convertToSize:CGSizeMake(25, 25)];
 							NSArray *newIconsArray = [NSArray arrayWithObject:contactImage];
 							MSHookIvar<NSArray *>(request.content, "_icons") = newIconsArray;
-							//break;
+							break;
 						}
 					}
 				}
@@ -70,7 +71,7 @@ dispatch_queue_t highProtityQueue() {
 		// creating a cicrle path
 		UIBezierPath *bPath = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(0, 0, size.height, size.width)];
 		[bPath addClip];
-		// loading the image in the given size
+		// loading the image in the given size within the circle path
 		[image drawInRect:CGRectMake(0, 0, size.height, size.width)];
   	}];
 
