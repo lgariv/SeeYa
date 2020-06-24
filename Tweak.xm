@@ -5,7 +5,6 @@ dispatch_queue_t highProtityQueue() {
 	return queue;
 }
 
-%group Tweak
 %hook CSNotificationDispatcher
 - (void)postNotificationRequest:(NCNotificationRequest *)request {
 	if ([[request.content.header lowercaseString] containsString:@"whatsapp"]) {
@@ -78,5 +77,4 @@ dispatch_queue_t highProtityQueue() {
 	renderer = nil;
     return imageRender;
 }
-%end
 %end
