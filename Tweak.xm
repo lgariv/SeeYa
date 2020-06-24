@@ -1,22 +1,22 @@
 #import "Tweak.h"
 
-NSString *contactImagePath;
-UIImage *contactImage;
-
 dispatch_queue_t highProtityQueue() {
 	dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
 	return queue;
 }
 
+%group Tweak
 %hook CSNotificationDispatcher
 - (void)postNotificationRequest:(NCNotificationRequest *)request {
 	if ([[request.content.header lowercaseString] containsString:@"whatsapp"]) {
+		NSString *__block contactImagePath;
+		UIImage *__block contactImage;
 		dispatch_async(dispatch_get_main_queue(),^{
 			dispatch_sync(highProtityQueue(),^{
 				NSString *threadId = [request threadIdentifier];
 				NSString *chatId = [threadId componentsSeparatedByString:@"@"][0];
 				NSFileManager *fileManager = [[NSFileManager alloc] init];
-				NSArray *identifiers = @[@"group.net.whatsapp.WhatsApp.shared"/*, @"group.net.whatsapp.WhatsAppSMB.shared"*/];
+				NSArray *identifiers = @[@"group.net.whatsapp.WhatsApp.shared", @"group.net.whatsapp.WhatsAppSMB.shared"];
 
 				for (NSString *identifier in identifiers) {
 					NSString *file;
@@ -79,3 +79,16 @@ dispatch_queue_t highProtityQueue() {
     return imageRender;
 }
 %end
+%end
+
+static void loadPrefs() {
+    NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/var/mobile/Library/Preferences/com.miwix.seeyaprefs.plist"];
+    if ( [prefs objectForKey:@"TweakisEnabled"] ? [[prefs objectForKey:@"TweakisEnabled"] boolValue] : NO ) {
+		%init(Tweak);
+	}
+}
+
+%ctor {
+    loadPrefs();
+    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)loadPrefs, CFSTR("com.miwix.seeyaprefs/settingschanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
+}

@@ -14,3 +14,5 @@ SeeYa_FRAMEWORKS = UIKit
 SeeYa_CFLAGS = -fobjc-arc
 
 include $(THEOS_MAKE_PATH)/tweak.mk
+SUBPROJECTS += SeeYaPrefs
+include $(THEOS_MAKE_PATH)/aggregate.mk
