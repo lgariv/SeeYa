@@ -17,6 +17,12 @@
 -(NSString *)threadIdentifier;
 @end
 
+@interface SBDashBoardNotificationDispatcher : NSObject
+// %new
+-(UIImage *)getImageFrom:(NSString *)contactName;
+- (UIImage *)imageWithImage:(UIImage *)image convertToSize:(CGSize)size;
+@end
+
 @interface CSNotificationDispatcher : NSObject
 // %new
 -(UIImage *)getImageFrom:(NSString *)contactName;
