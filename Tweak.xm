@@ -80,15 +80,3 @@ dispatch_queue_t highProtityQueue() {
 }
 %end
 %end
-
-static void loadPrefs() {
-    NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/var/mobile/Library/Preferences/com.miwix.seeyaprefs.plist"];
-    if ( [prefs objectForKey:@"TweakisEnabled"] ? [[prefs objectForKey:@"TweakisEnabled"] boolValue] : NO ) {
-		%init(Tweak);
-	}
-}
-
-%ctor {
-    loadPrefs();
-    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)loadPrefs, CFSTR("com.miwix.seeyaprefs/settingschanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
-}
