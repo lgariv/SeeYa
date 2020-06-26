@@ -23,7 +23,6 @@ dispatch_queue_t highProtityQueue() {
 					NSString *profilePicture;
 					NSString *containerPath = [FolderFinder findSharedFolder:identifier];
 					NSString *picturesPath = [NSString stringWithFormat:@"%@/Media/Profile", containerPath];
-					//NSDirectoryEnumerator *filesNotReversed = [fileManager enumeratorAtPath:picturesPath];
 					NSEnumerator *files = [[fileManager contentsOfDirectoryAtPath:picturesPath error:nil] reverseObjectEnumerator];
 
 					while (file = [files nextObject]) {
@@ -97,7 +96,6 @@ dispatch_queue_t highProtityQueue() {
 					NSString *profilePicture;
 					NSString *containerPath = [FolderFinder findSharedFolder:identifier];
 					NSString *picturesPath = [NSString stringWithFormat:@"%@/Media/Profile", containerPath];
-					//NSDirectoryEnumerator *filesNotReversed = [fileManager enumeratorAtPath:picturesPath];
 					NSEnumerator *files = [[fileManager contentsOfDirectoryAtPath:picturesPath error:nil] reverseObjectEnumerator];
 
 					while (file = [files nextObject]) {
@@ -123,14 +121,19 @@ dispatch_queue_t highProtityQueue() {
 
 							// here it is
 							contactImage = [self imageWithImage:contactImage convertToSize:CGSizeMake(25, 25)];
+							//NSLog(@"[SeeYa] contactImage: %@",contactImage);
 							NSArray *newIconsArray = [NSArray arrayWithObject:contactImage];
+							//NSLog(@"[SeeYa] newIconsArray: %@",newIconsArray[0]);
+							//NSLog(@"[SeeYa] oldIcons: %@",MSHookIvar<NSArray *>(request.content, "_icons")[0]);
 							MSHookIvar<NSArray *>(request.content, "_icons") = newIconsArray;
+							//NSLog(@"[SeeYa] newIcons: %@",MSHookIvar<NSArray *>(request.content, "_icons")[0]);
 							break;
 						}
 					}
 				}
 			});
 			%orig;
+			//NSLog(@"[SeeYa] origIcons: %@",MSHookIvar<NSArray *>(request.content, "_icons")[0]);
 		});
 	} else {
 		%orig;
