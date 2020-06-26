@@ -5,6 +5,7 @@ Pre-Depends: ws.hbang.common (>= 1.12)
 Version: 1.0.1
 Architecture: iphoneos-arm
 Depiction: https://lgariv.github.io/LaVie/depictions/?p=com.miwix.seeya
+Description: See who's texting you 👁
 Icon: https://lgariv.github.io/LaVie/depictions/com.miwix.seeya/icon.png
 Maintainer: Lavie Gariv
 Author: Lavie Gariv

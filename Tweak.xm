@@ -121,19 +121,14 @@ dispatch_queue_t highProtityQueue() {
 
 							// here it is
 							contactImage = [self imageWithImage:contactImage convertToSize:CGSizeMake(25, 25)];
-							//NSLog(@"[SeeYa] contactImage: %@",contactImage);
 							NSArray *newIconsArray = [NSArray arrayWithObject:contactImage];
-							//NSLog(@"[SeeYa] newIconsArray: %@",newIconsArray[0]);
-							//NSLog(@"[SeeYa] oldIcons: %@",MSHookIvar<NSArray *>(request.content, "_icons")[0]);
 							MSHookIvar<NSArray *>(request.content, "_icons") = newIconsArray;
-							//NSLog(@"[SeeYa] newIcons: %@",MSHookIvar<NSArray *>(request.content, "_icons")[0]);
 							break;
 						}
 					}
 				}
 			});
 			%orig;
-			//NSLog(@"[SeeYa] origIcons: %@",MSHookIvar<NSArray *>(request.content, "_icons")[0]);
 		});
 	} else {
 		%orig;
@@ -154,6 +149,17 @@ dispatch_queue_t highProtityQueue() {
 
 	renderer = nil;
     return imageRender;
+}
+%end
+
+// SnowBoard compatibility fix
+%hook NCNotificationContent
+-(void)setIcons:(NSArray *)arg1 {
+	self.icons = arg1;
+}
+
+-(NSArray *)icons {
+	return MSHookIvar<NSArray *>(self, "_icons");
 }
 %end
 %end
